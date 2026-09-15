@@ -43,7 +43,7 @@ export default function Landing({ session }) {
           }}
         >
           <div className="card">
-            <h3>1. Pick your NOTE-X</h3>
+            <h3>1. Pick your shelf</h3>
             <p>College, year, subject — three taps and you're looking at the right stack.</p>
           </div>
           <div className="card">

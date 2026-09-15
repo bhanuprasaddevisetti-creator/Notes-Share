@@ -1,12 +1,58 @@
 import { useEffect, useState } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { supabase } from './supabaseClient'
-import Navbar from './components/Navbar'
+import PublicHeader from './components/PublicHeader'
+import Sidebar from './components/Sidebar'
+import TopBar from './components/TopBar'
 import Landing from './pages/Landing'
 import Auth from './pages/Auth'
 import Dashboard from './pages/Dashboard'
 import Upload from './pages/Upload'
 import AdminDashboard from './pages/AdminDashboard'
+import Profile from './pages/Profile'
+
+function AppShell({ session, profile }) {
+  const location = useLocation()
+  const isPublicPage = location.pathname === '/' || location.pathname === '/auth'
+
+  if (session && !isPublicPage) {
+    // Logged-in layout: sidebar on the left, minimal top bar, page content on the right.
+    return (
+      <div style={{ display: 'flex', minHeight: '100vh' }}>
+        <Sidebar profile={profile} />
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+          <TopBar profile={profile} />
+          <main style={{ flex: 1 }}>
+            <Routes>
+              <Route path="/browse" element={<Dashboard profile={profile} />} />
+              <Route path="/upload" element={<Upload profile={profile} />} />
+              <Route path="/profile" element={<Profile session={session} profile={profile} />} />
+              <Route
+                path="/admin"
+                element={profile?.is_admin ? <AdminDashboard /> : <Navigate to="/browse" replace />}
+              />
+              <Route path="*" element={<Navigate to="/browse" replace />} />
+            </Routes>
+          </main>
+        </div>
+      </div>
+    )
+  }
+
+  // Logged-out layout: simple header, public pages only.
+  return (
+    <>
+      <PublicHeader />
+      <main style={{ flex: 1 }}>
+        <Routes>
+          <Route path="/" element={<Landing session={session} />} />
+          <Route path="/auth" element={session ? <Navigate to="/browse" replace /> : <Auth />} />
+          <Route path="*" element={<Navigate to={session ? '/browse' : '/'} replace />} />
+        </Routes>
+      </main>
+    </>
+  )
+}
 
 function App() {
   const [session, setSession] = useState(null)
@@ -41,30 +87,7 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Navbar session={session} profile={profile} />
-      <main style={{ flex: 1 }}>
-        <Routes>
-          <Route path="/" element={<Landing session={session} />} />
-          <Route
-            path="/auth"
-            element={session ? <Navigate to="/browse" replace /> : <Auth />}
-          />
-          <Route
-            path="/browse"
-            element={session ? <Dashboard profile={profile} /> : <Navigate to="/auth" replace />}
-          />
-          <Route
-            path="/upload"
-            element={session ? <Upload profile={profile} /> : <Navigate to="/auth" replace />}
-          />
-          <Route
-            path="/admin"
-            element={
-              profile?.is_admin ? <AdminDashboard /> : <Navigate to={session ? '/browse' : '/auth'} replace />
-            }
-          />
-        </Routes>
-      </main>
+      <AppShell session={session} profile={profile} />
     </BrowserRouter>
   )
 }

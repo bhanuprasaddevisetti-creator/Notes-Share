@@ -30,7 +30,7 @@ export default function AdminDashboard() {
   return (
     <div className="container" style={{ paddingTop: '2.5rem', paddingBottom: '3rem' }}>
       <h1 style={{ fontSize: '1.9rem' }}>Admin dashboard</h1>
-      <p>A snapshot of who's using Shelf and how close you are to the free-tier limits.</p>
+      <p>A snapshot of who's using NOTE-X and how close you are to the free-tier limits.</p>
 
       <div
         style={{
@@ -98,6 +98,44 @@ export default function AdminDashboard() {
               ))}
             </tbody>
           </table>
+        )}
+      </div>
+
+      <div className="card" style={{ marginTop: '1.6rem' }}>
+        <h3>All users</h3>
+        {!stats.all_users || stats.all_users.length === 0 ? (
+          <p className="hint-text">No signups yet.</p>
+        ) : (
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '600px' }}>
+              <thead>
+                <tr style={{ textAlign: 'left', borderBottom: '1.5px solid var(--line)' }}>
+                  <th style={{ padding: '0.4em 0.6em 0.4em 0' }}>Email</th>
+                  <th style={{ padding: '0.4em 0.6em' }}>Name</th>
+                  <th style={{ padding: '0.4em 0.6em' }}>College</th>
+                  <th style={{ padding: '0.4em 0.6em' }}>Year</th>
+                  <th style={{ padding: '0.4em 0 0.4em 0.6em' }}>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {stats.all_users.map((u) => (
+                  <tr key={u.email} style={{ borderBottom: '1px solid var(--line)' }}>
+                    <td style={{ padding: '0.4em 0.6em 0.4em 0', fontFamily: 'var(--font-mono)', fontSize: '0.85rem' }}>
+                      {u.email}
+                    </td>
+                    <td style={{ padding: '0.4em 0.6em' }}>{u.full_name || '—'}</td>
+                    <td style={{ padding: '0.4em 0.6em' }}>{u.college_name || '—'}</td>
+                    <td style={{ padding: '0.4em 0.6em' }}>{u.year || '—'}</td>
+                    <td style={{ padding: '0.4em 0 0.4em 0.6em' }}>
+                      <span className={`tag ${u.verified ? 'verified' : 'unverified'}`}>
+                        {u.verified ? 'verified' : 'unverified'}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>
