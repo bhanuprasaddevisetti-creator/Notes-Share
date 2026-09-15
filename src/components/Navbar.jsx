@@ -35,7 +35,7 @@ export default function Navbar({ session, profile }) {
             textDecoration: 'none',
           }}
         >
-          Shelf
+          NOTE-X
         </Link>
 
         {session ? (

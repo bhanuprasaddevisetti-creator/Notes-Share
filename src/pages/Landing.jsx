@@ -18,7 +18,7 @@ export default function Landing({ session }) {
           <h1>Find last semester's DBMS notes in ten seconds, not ten scrolls.</h1>
           <p style={{ fontSize: '1.05rem' }}>
             Your college already shares notes — just scattered across chats nobody can search.
-            Shelf puts them in one place: pick your college, your year, your subject, and see
+            NOTE-X puts them in one place: pick your college, your year, your subject, and see
             what your seniors already uploaded.
           </p>
           <div style={{ display: 'flex', gap: '0.8rem', marginTop: '1.6rem' }}>
@@ -43,7 +43,7 @@ export default function Landing({ session }) {
           }}
         >
           <div className="card">
-            <h3>1. Pick your shelf</h3>
+            <h3>1. Pick your NOTE-X</h3>
             <p>College, year, subject — three taps and you're looking at the right stack.</p>
           </div>
           <div className="card">
