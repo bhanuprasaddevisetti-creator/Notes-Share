@@ -70,12 +70,33 @@ export default function NoteCard({ note, currentUserId, isAdmin, onVoted, onDele
             )}
           </span>
           {canEdit && (
-            <button onClick={() => setEditing(true)} className="ghost" style={{ marginLeft: 'auto' }}>
+            <button
+              onClick={() => setEditing(true)}
+              style={{
+                marginLeft: 'auto',
+                padding: '0.35em 0.9em',
+                fontSize: '0.85rem',
+                borderRadius: '999px',
+                background: 'var(--paper-raised)',
+                borderColor: 'var(--ink-soft)',
+                color: 'var(--ink-soft)',
+              }}
+            >
               Edit
             </button>
           )}
           {isAdmin && (
-            <button onClick={handleDelete} className="ghost" style={{ color: 'var(--rust)' }}>
+            <button
+              onClick={handleDelete}
+              style={{
+                padding: '0.35em 0.9em',
+                fontSize: '0.85rem',
+                borderRadius: '999px',
+                background: '#fbecea',
+                borderColor: 'var(--rust)',
+                color: 'var(--rust)',
+              }}
+            >
               Delete
             </button>
           )}

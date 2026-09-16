@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import Modal from './Modal'
-import { updateNote, uploadNoteFile, deleteNoteFile } from '../lib/notes'
+import { updateNote, uploadNoteFile, deleteNoteFile, hashFile } from '../lib/notes'
 
 const YEARS = ['1st year', '2nd year', '3rd year', '4th year', 'Postgraduate']
 
@@ -23,11 +23,13 @@ export default function EditNoteModal({ note, currentUserId, onClose, onSaved })
     setStatus({ loading: true, error: '' })
     try {
       let filePath = null
+      let fileHash = null
       if (newFile) {
+        fileHash = await hashFile(newFile)
         filePath = await uploadNoteFile(newFile, currentUserId)
       }
 
-      await updateNote(note.id, { ...form, filePath })
+      await updateNote(note.id, { ...form, filePath, fileHash })
 
       // Clean up the old file only after the note record points at the new one.
       if (filePath && note.file_path) {

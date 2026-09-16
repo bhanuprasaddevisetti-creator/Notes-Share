@@ -2,6 +2,28 @@ import { supabase } from '../supabaseClient'
 
 const BUCKET = 'notes-files'
 
+// Fingerprints a file's actual content (not its name) using SHA-256, entirely
+// in the browser. Two files with identical content always produce the same
+// hash, regardless of filename — this is how duplicate detection works.
+export async function hashFile(file) {
+  const buffer = await file.arrayBuffer()
+  const hashBuffer = await crypto.subtle.digest('SHA-256', buffer)
+  const hashArray = Array.from(new Uint8Array(hashBuffer))
+  return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('')
+}
+
+// Checks if a file with this exact content has already been uploaded anywhere.
+export async function findDuplicateByHash(hash) {
+  const { data, error } = await supabase
+    .from('notes')
+    .select('title, colleges(name), profiles(full_name)')
+    .eq('file_hash', hash)
+    .limit(1)
+    .maybeSingle()
+  if (error) throw error
+  return data
+}
+
 export async function fetchNotes({ collegeId, year, subject }) {
   let query = supabase
     .from('notes')
@@ -31,7 +53,7 @@ export function getFileUrl(path) {
   return data.publicUrl
 }
 
-export async function createNote({ collegeId, year, subject, title, description, filePath, uploaderId }) {
+export async function createNote({ collegeId, year, subject, title, description, filePath, fileHash, uploaderId }) {
   const { error } = await supabase.from('notes').insert({
     college_id: collegeId,
     year,
@@ -39,14 +61,18 @@ export async function createNote({ collegeId, year, subject, title, description,
     title,
     description,
     file_path: filePath,
+    file_hash: fileHash,
     uploader_id: uploaderId,
   })
   if (error) throw error
 }
 
-export async function updateNote(noteId, { title, subject, year, description, filePath }) {
+export async function updateNote(noteId, { title, subject, year, description, filePath, fileHash }) {
   const updates = { title, subject, year, description }
-  if (filePath) updates.file_path = filePath
+  if (filePath) {
+    updates.file_path = filePath
+    updates.file_hash = fileHash
+  }
   const { error } = await supabase.from('notes').update(updates).eq('id', noteId)
   if (error) throw error
 }

@@ -11,6 +11,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true)
   const [showNotes, setShowNotes] = useState(false)
   const [showColleges, setShowColleges] = useState(false)
+  const [showDuplicates, setShowDuplicates] = useState(false)
   const [openMenuFor, setOpenMenuFor] = useState(null)
 
   function refresh() {
@@ -85,6 +86,13 @@ export default function AdminDashboard() {
           value={stats.total_colleges}
           onClick={() => setShowColleges(true)}
           hint="Click to view all"
+        />
+        <StatCard
+          label="Possible duplicates"
+          value={stats.duplicate_notes ? new Set(stats.duplicate_notes.map((d) => d.file_hash)).size : 0}
+          accent="var(--rust)"
+          onClick={() => setShowDuplicates(true)}
+          hint="Click to review"
         />
       </div>
 
@@ -182,6 +190,54 @@ export default function AdminDashboard() {
                 ))}
               </tbody>
             </table>
+          )}
+        </Modal>
+      )}
+
+      {showDuplicates && (
+        <Modal title="Possible duplicate files" onClose={() => setShowDuplicates(false)}>
+          {!stats.duplicate_notes || stats.duplicate_notes.length === 0 ? (
+            <p className="hint-text">No duplicate files detected. Nice and clean.</p>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+              {Object.entries(
+                stats.duplicate_notes.reduce((groups, n) => {
+                  groups[n.file_hash] = groups[n.file_hash] || []
+                  groups[n.file_hash].push(n)
+                  return groups
+                }, {})
+              ).map(([hash, group]) => (
+                <div key={hash} style={{ border: '1.5px solid var(--line)', borderRadius: 'var(--radius)', padding: '0.9rem' }}>
+                  <p className="hint-text" style={{ margin: '0 0 0.6em 0' }}>
+                    {group.length} identical files found
+                  </p>
+                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <thead>
+                      <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--line)' }}>
+                        <th style={{ padding: '0.3em 0.5em 0.3em 0' }}>Title</th>
+                        <th style={{ padding: '0.3em 0.5em' }}>College</th>
+                        <th style={{ padding: '0.3em 0.5em' }}>Uploader</th>
+                        <th style={{ padding: '0.3em 0 0.3em 0.5em' }}></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {group.map((n) => (
+                        <tr key={n.id}>
+                          <td style={{ padding: '0.3em 0.5em 0.3em 0' }}>{n.title}</td>
+                          <td style={{ padding: '0.3em 0.5em' }}>{n.college_name || '—'}</td>
+                          <td style={{ padding: '0.3em 0.5em' }}>{n.uploader_name || '—'}</td>
+                          <td style={{ padding: '0.3em 0 0.3em 0.5em' }}>
+                            <button className="ghost" style={{ color: 'var(--rust)' }} onClick={() => handleDeleteNote(n)}>
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ))}
+            </div>
           )}
         </Modal>
       )}
