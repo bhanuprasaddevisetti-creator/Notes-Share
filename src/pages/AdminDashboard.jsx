@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getAdminStats, formatBytes, setUserBanned, deleteUser } from '../lib/admin'
+import { getAdminStats, formatBytes, setUserBanned, deleteUser, setUserSubadmin, deleteCollege } from '../lib/admin'
 import { deleteNote } from '../lib/notes'
 import Modal from '../components/Modal'
 
@@ -39,6 +39,24 @@ export default function AdminDashboard() {
     await deleteUser(user.id)
     setOpenMenuFor(null)
     refresh()
+  }
+
+  async function handleSubadminToggle(user) {
+    const action = user.is_subadmin ? 'remove sub-admin from' : 'make sub-admin'
+    if (!confirm(`${action === 'make sub-admin' ? 'Make' : 'Remove sub-admin from'} ${user.email}?`)) return
+    await setUserSubadmin(user.id, !user.is_subadmin)
+    setOpenMenuFor(null)
+    refresh()
+  }
+
+  async function handleDeleteCollege(college) {
+    if (!confirm(`Delete ${college.name}? This only works if it has no members.`)) return
+    try {
+      await deleteCollege(college.id)
+      refresh()
+    } catch (err) {
+      alert(err.message)
+    }
   }
 
   async function handleDeleteNote(note) {
@@ -175,7 +193,8 @@ export default function AdminDashboard() {
                 <tr style={{ textAlign: 'left', borderBottom: '1.5px solid var(--line)' }}>
                   <th style={{ padding: '0.4em 0.6em 0.4em 0' }}>College</th>
                   <th style={{ padding: '0.4em 0.6em' }}>Verified domain</th>
-                  <th style={{ padding: '0.4em 0 0.4em 0.6em' }}>Members</th>
+                  <th style={{ padding: '0.4em 0.6em' }}>Members</th>
+                  <th style={{ padding: '0.4em 0 0.4em 0.6em' }}></th>
                 </tr>
               </thead>
               <tbody>
@@ -185,7 +204,16 @@ export default function AdminDashboard() {
                     <td style={{ padding: '0.4em 0.6em', fontFamily: 'var(--font-mono)', fontSize: '0.85rem' }}>
                       {c.domain || 'not set yet'}
                     </td>
-                    <td style={{ padding: '0.4em 0 0.4em 0.6em' }}>{c.member_count}</td>
+                    <td style={{ padding: '0.4em 0.6em' }}>{c.member_count}</td>
+                    <td style={{ padding: '0.4em 0 0.4em 0.6em' }}>
+                      {c.member_count === 0 ? (
+                        <button className="ghost" style={{ color: 'var(--rust)' }} onClick={() => handleDeleteCollege(c)}>
+                          Delete
+                        </button>
+                      ) : (
+                        <span className="hint-text" style={{ fontSize: '0.78rem' }}>has members</span>
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -306,6 +334,11 @@ export default function AdminDashboard() {
                           admin
                         </span>
                       )}
+                      {u.is_subadmin && (
+                        <span className="tag" style={{ color: 'var(--ink-soft)', borderColor: 'var(--ink-soft)' }}>
+                          sub-admin
+                        </span>
+                      )}
                     </td>
                     <td style={{ padding: '0.4em 0 0.4em 0.6em', position: 'relative' }}>
                       {!u.is_admin && (
@@ -331,6 +364,13 @@ export default function AdminDashboard() {
                                 gap: '0.2rem',
                               }}
                             >
+                              <button
+                                className="ghost"
+                                style={{ textAlign: 'left', textDecoration: 'none' }}
+                                onClick={() => handleSubadminToggle(u)}
+                              >
+                                {u.is_subadmin ? 'Remove sub-admin' : 'Make sub-admin'}
+                              </button>
                               <button
                                 className="ghost"
                                 style={{ textAlign: 'left', textDecoration: 'none' }}

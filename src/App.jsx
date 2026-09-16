@@ -9,6 +9,7 @@ import Auth from './pages/Auth'
 import Dashboard from './pages/Dashboard'
 import Upload from './pages/Upload'
 import AdminDashboard from './pages/AdminDashboard'
+import SubAdminDashboard from './pages/SubAdminDashboard'
 import Profile from './pages/Profile'
 import Home from './pages/Home'
 
@@ -31,7 +32,15 @@ function AppShell({ session, profile }) {
               <Route path="/profile" element={<Profile session={session} profile={profile} />} />
               <Route
                 path="/admin"
-                element={profile?.is_admin ? <AdminDashboard /> : <Navigate to="/home" replace />}
+                element={
+                  profile?.is_admin ? (
+                    <AdminDashboard />
+                  ) : profile?.is_subadmin ? (
+                    <SubAdminDashboard />
+                  ) : (
+                    <Navigate to="/home" replace />
+                  )
+                }
               />
               <Route path="*" element={<Navigate to="/home" replace />} />
             </Routes>

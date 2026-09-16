@@ -8,7 +8,7 @@ export default function Sidebar({ profile }) {
     { to: '/browse', label: 'Browse' },
     { to: '/upload', label: 'Upload notes' },
   ]
-  if (profile?.is_admin) links.push({ to: '/admin', label: 'Admin' })
+  if (profile?.is_admin || profile?.is_subadmin) links.push({ to: '/admin', label: 'Admin' })
 
   return (
     <aside
