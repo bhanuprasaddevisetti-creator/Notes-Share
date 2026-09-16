@@ -20,6 +20,9 @@ export default function PublicHeader() {
         <Link
           to="/"
           style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
             fontFamily: 'var(--font-head)',
             fontWeight: 700,
             fontSize: '1.3rem',
@@ -27,6 +30,7 @@ export default function PublicHeader() {
             textDecoration: 'none',
           }}
         >
+          <img src="/logo.svg" alt="" width="28" height="28" />
           NOTE-X
         </Link>
         <Link to="/auth">

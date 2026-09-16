@@ -24,7 +24,9 @@ export default function Sidebar({ profile }) {
       <Link
         to="/home"
         style={{
-          display: 'block',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem',
           fontFamily: 'var(--font-head)',
           fontWeight: 700,
           fontSize: '1.3rem',
@@ -34,6 +36,7 @@ export default function Sidebar({ profile }) {
           padding: '0 0.4rem',
         }}
       >
+        <img src="/logo.svg" alt="" width="28" height="28" />
         NOTE-X
       </Link>
 
