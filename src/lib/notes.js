@@ -44,6 +44,23 @@ export async function createNote({ collegeId, year, subject, title, description,
   if (error) throw error
 }
 
+export async function updateNote(noteId, { title, subject, year, description, filePath }) {
+  const updates = { title, subject, year, description }
+  if (filePath) updates.file_path = filePath
+  const { error } = await supabase.from('notes').update(updates).eq('id', noteId)
+  if (error) throw error
+}
+
+export async function deleteNoteFile(path) {
+  // Best-effort cleanup of a replaced file — ignore errors so a failed
+  // cleanup never blocks the actual edit from completing.
+  try {
+    await supabase.storage.from(BUCKET).remove([path])
+  } catch (_err) {
+    // ignore
+  }
+}
+
 export async function deleteNote(noteId) {
   const { error } = await supabase.from('notes').delete().eq('id', noteId)
   if (error) throw error

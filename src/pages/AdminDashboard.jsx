@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { getAdminStats, formatBytes, setUserBanned, deleteUser } from '../lib/admin'
 import { deleteNote } from '../lib/notes'
+import Modal from '../components/Modal'
 
 const STORAGE_LIMIT_BYTES = 1024 * 1024 * 1024 // 1GB, Supabase free tier
 
@@ -76,14 +77,14 @@ export default function AdminDashboard() {
         <StatCard
           label="Notes uploaded"
           value={stats.total_notes}
-          onClick={() => setShowNotes((s) => !s)}
-          hint={showNotes ? 'Click to hide' : 'Click to view all'}
+          onClick={() => setShowNotes(true)}
+          hint="Click to view all"
         />
         <StatCard
           label="Colleges"
           value={stats.total_colleges}
-          onClick={() => setShowColleges((s) => !s)}
-          hint={showColleges ? 'Click to hide' : 'Click to view all'}
+          onClick={() => setShowColleges(true)}
+          hint="Click to view all"
         />
       </div>
 
@@ -118,8 +119,7 @@ export default function AdminDashboard() {
       </div>
 
       {showNotes && (
-        <div className="card" style={{ marginBottom: '1.6rem' }}>
-          <h3>All notes</h3>
+        <Modal title="All notes" onClose={() => setShowNotes(false)}>
           {!stats.all_notes || stats.all_notes.length === 0 ? (
             <p className="hint-text">No notes uploaded yet.</p>
           ) : (
@@ -154,12 +154,11 @@ export default function AdminDashboard() {
               </table>
             </div>
           )}
-        </div>
+        </Modal>
       )}
 
       {showColleges && (
-        <div className="card" style={{ marginBottom: '1.6rem' }}>
-          <h3>All colleges</h3>
+        <Modal title="All colleges" onClose={() => setShowColleges(false)}>
           {!stats.all_colleges || stats.all_colleges.length === 0 ? (
             <p className="hint-text">No colleges yet.</p>
           ) : (
@@ -184,7 +183,7 @@ export default function AdminDashboard() {
               </tbody>
             </table>
           )}
-        </div>
+        </Modal>
       )}
 
       <div className="card">

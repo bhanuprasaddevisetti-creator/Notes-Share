@@ -1,6 +1,11 @@
+import { useState } from 'react'
 import { getFileUrl, castVote, deleteNote } from '../lib/notes'
+import EditNoteModal from './EditNoteModal'
 
-export default function NoteCard({ note, currentUserId, isAdmin, onVoted, onDeleted }) {
+export default function NoteCard({ note, currentUserId, isAdmin, onVoted, onDeleted, onUpdated }) {
+  const [editing, setEditing] = useState(false)
+  const canEdit = isAdmin || note.uploader_id === currentUserId
+
   async function vote(value) {
     if (!currentUserId) return
     await castVote(note.id, currentUserId, value)
@@ -52,7 +57,7 @@ export default function NoteCard({ note, currentUserId, isAdmin, onVoted, onDele
           {note.colleges?.name} · {note.year}
         </p>
         {note.description && <p style={{ margin: '0.4em 0' }}>{note.description}</p>}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.7rem', marginTop: '0.6rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.7rem', marginTop: '0.6rem', flexWrap: 'wrap' }}>
           <a href={getFileUrl(note.file_path)} target="_blank" rel="noreferrer">
             <button style={{ padding: '0.4em 1em' }}>Open file</button>
           </a>
@@ -64,17 +69,27 @@ export default function NoteCard({ note, currentUserId, isAdmin, onVoted, onDele
               </span>
             )}
           </span>
+          {canEdit && (
+            <button onClick={() => setEditing(true)} className="ghost" style={{ marginLeft: 'auto' }}>
+              Edit
+            </button>
+          )}
           {isAdmin && (
-            <button
-              onClick={handleDelete}
-              className="ghost"
-              style={{ color: 'var(--rust)', marginLeft: 'auto' }}
-            >
+            <button onClick={handleDelete} className="ghost" style={{ color: 'var(--rust)' }}>
               Delete
             </button>
           )}
         </div>
       </div>
+
+      {editing && (
+        <EditNoteModal
+          note={note}
+          currentUserId={currentUserId}
+          onClose={() => setEditing(false)}
+          onSaved={onUpdated}
+        />
+      )}
     </div>
   )
 }

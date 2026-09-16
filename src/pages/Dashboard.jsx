@@ -103,6 +103,7 @@ export default function Dashboard({ profile }) {
             isAdmin={profile?.is_admin}
             onVoted={runSearch}
             onDeleted={runSearch}
+            onUpdated={runSearch}
           />
         ))}
       </div>
