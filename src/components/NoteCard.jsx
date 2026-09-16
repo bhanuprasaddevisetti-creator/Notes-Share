@@ -48,9 +48,9 @@ export default function NoteCard({ note, currentUserId, isAdmin, onVoted, onDele
 
       <div style={{ flex: 1 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-          <h3 style={{ margin: 0 }}>{note.title}</h3>
+          <h3 style={{ margin: 0 }}>{note.subject}</h3>
           <span className="tag" style={{ borderColor: 'var(--line)', color: 'var(--charcoal-soft)' }}>
-            {note.subject}
+            {note.title}
           </span>
         </div>
         <p className="hint-text" style={{ margin: '0.3em 0' }}>
