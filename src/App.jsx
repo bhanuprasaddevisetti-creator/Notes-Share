@@ -10,6 +10,7 @@ import Dashboard from './pages/Dashboard'
 import Upload from './pages/Upload'
 import AdminDashboard from './pages/AdminDashboard'
 import Profile from './pages/Profile'
+import Home from './pages/Home'
 
 function AppShell({ session, profile }) {
   const location = useLocation()
@@ -24,14 +25,15 @@ function AppShell({ session, profile }) {
           <TopBar profile={profile} />
           <main style={{ flex: 1 }}>
             <Routes>
+              <Route path="/home" element={<Home profile={profile} />} />
               <Route path="/browse" element={<Dashboard profile={profile} />} />
               <Route path="/upload" element={<Upload profile={profile} />} />
               <Route path="/profile" element={<Profile session={session} profile={profile} />} />
               <Route
                 path="/admin"
-                element={profile?.is_admin ? <AdminDashboard /> : <Navigate to="/browse" replace />}
+                element={profile?.is_admin ? <AdminDashboard /> : <Navigate to="/home" replace />}
               />
-              <Route path="*" element={<Navigate to="/browse" replace />} />
+              <Route path="*" element={<Navigate to="/home" replace />} />
             </Routes>
           </main>
         </div>
@@ -46,8 +48,8 @@ function AppShell({ session, profile }) {
       <main style={{ flex: 1 }}>
         <Routes>
           <Route path="/" element={<Landing session={session} />} />
-          <Route path="/auth" element={session ? <Navigate to="/browse" replace /> : <Auth />} />
-          <Route path="*" element={<Navigate to={session ? '/browse' : '/'} replace />} />
+          <Route path="/auth" element={session ? <Navigate to="/home" replace /> : <Auth />} />
+          <Route path="*" element={<Navigate to={session ? '/home' : '/'} replace />} />
         </Routes>
       </main>
     </>
@@ -58,6 +60,7 @@ function App() {
   const [session, setSession] = useState(null)
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [bannedMessage, setBannedMessage] = useState('')
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -80,10 +83,27 @@ function App() {
       .select('*, colleges(name, domain)')
       .eq('id', session.user.id)
       .single()
-      .then(({ data }) => setProfile(data))
+      .then(async ({ data }) => {
+        if (data?.banned) {
+          setBannedMessage('Your account has been suspended. Contact the site admin if you think this is a mistake.')
+          await supabase.auth.signOut()
+          setProfile(null)
+          return
+        }
+        setProfile(data)
+      })
   }, [session])
 
   if (loading) return null
+
+  if (bannedMessage) {
+    return (
+      <div className="container" style={{ paddingTop: '4rem', maxWidth: '480px' }}>
+        <h1 style={{ fontSize: '1.6rem' }}>Account suspended</h1>
+        <p>{bannedMessage}</p>
+      </div>
+    )
+  }
 
   return (
     <BrowserRouter>

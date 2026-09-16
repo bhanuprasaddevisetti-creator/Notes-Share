@@ -4,6 +4,7 @@ export default function Sidebar({ profile }) {
   const location = useLocation()
 
   const links = [
+    { to: '/home', label: 'Home' },
     { to: '/browse', label: 'Browse' },
     { to: '/upload', label: 'Upload notes' },
   ]
@@ -21,7 +22,7 @@ export default function Sidebar({ profile }) {
       }}
     >
       <Link
-        to="/"
+        to="/home"
         style={{
           display: 'block',
           fontFamily: 'var(--font-head)',

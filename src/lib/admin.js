@@ -6,6 +6,19 @@ export async function getAdminStats() {
   return data
 }
 
+export async function setUserBanned(userId, banned) {
+  const { error } = await supabase.rpc('admin_set_banned', {
+    target_user_id: userId,
+    should_ban: banned,
+  })
+  if (error) throw error
+}
+
+export async function deleteUser(userId) {
+  const { error } = await supabase.rpc('admin_delete_user', { target_user_id: userId })
+  if (error) throw error
+}
+
 export function formatBytes(bytes) {
   if (!bytes) return '0 MB'
   const mb = bytes / (1024 * 1024)

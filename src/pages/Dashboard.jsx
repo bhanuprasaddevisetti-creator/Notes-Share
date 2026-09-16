@@ -96,7 +96,14 @@ export default function Dashboard({ profile }) {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
         {notes.map((note) => (
-          <NoteCard key={note.id} note={note} currentUserId={profile?.id} onVoted={runSearch} />
+          <NoteCard
+            key={note.id}
+            note={note}
+            currentUserId={profile?.id}
+            isAdmin={profile?.is_admin}
+            onVoted={runSearch}
+            onDeleted={runSearch}
+          />
         ))}
       </div>
     </div>

@@ -44,6 +44,11 @@ export async function createNote({ collegeId, year, subject, title, description,
   if (error) throw error
 }
 
+export async function deleteNote(noteId) {
+  const { error } = await supabase.from('notes').delete().eq('id', noteId)
+  if (error) throw error
+}
+
 // value is 1 (upvote) or -1 (downvote). Calling again with the same value removes the vote.
 export async function castVote(noteId, userId, value) {
   const { data: existing } = await supabase

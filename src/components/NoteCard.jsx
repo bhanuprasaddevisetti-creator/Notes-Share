@@ -1,10 +1,16 @@
-import { getFileUrl, castVote } from '../lib/notes'
+import { getFileUrl, castVote, deleteNote } from '../lib/notes'
 
-export default function NoteCard({ note, currentUserId, onVoted }) {
+export default function NoteCard({ note, currentUserId, isAdmin, onVoted, onDeleted }) {
   async function vote(value) {
     if (!currentUserId) return
     await castVote(note.id, currentUserId, value)
     onVoted?.()
+  }
+
+  async function handleDelete() {
+    if (!confirm(`Delete "${note.title}"? This can't be undone.`)) return
+    await deleteNote(note.id)
+    onDeleted?.()
   }
 
   return (
@@ -58,6 +64,15 @@ export default function NoteCard({ note, currentUserId, onVoted }) {
               </span>
             )}
           </span>
+          {isAdmin && (
+            <button
+              onClick={handleDelete}
+              className="ghost"
+              style={{ color: 'var(--rust)', marginLeft: 'auto' }}
+            >
+              Delete
+            </button>
+          )}
         </div>
       </div>
     </div>
