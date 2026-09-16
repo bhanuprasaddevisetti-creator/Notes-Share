@@ -24,6 +24,41 @@ export async function findDuplicateByHash(hash) {
   return data
 }
 
+// Checks if a note with the same college + subject + title already exists,
+// even if the actual file content differs (e.g. a re-scanned copy).
+export async function findDuplicateByMetadata(collegeId, subject, title) {
+  const { data, error } = await supabase
+    .from('notes')
+    .select('title, colleges(name), profiles(full_name)')
+    .eq('college_id', collegeId)
+    .ilike('subject', subject.trim())
+    .ilike('title', title.trim())
+    .limit(1)
+    .maybeSingle()
+  if (error) throw error
+  return data
+}
+
+// Finds notes already uploaded for the same subject (and optionally same title/unit)
+// at a given college. Used for a soft "these already exist" heads-up on upload.
+export async function findSimilarNotes({ collegeId, subject, title, year }) {
+  const { data, error } = await supabase
+    .from('notes')
+    .select('title, subject, year, profiles(full_name)')
+    .eq('college_id', collegeId)
+    .ilike('subject', subject.trim())
+    .eq('year', year)
+    .limit(5)
+  if (error) throw error
+  if (!data) return { sameSubject: [], sameUnit: [] }
+
+  const normalizedTitle = title.trim().toLowerCase()
+  return {
+    sameSubject: data,
+    sameUnit: data.filter((n) => n.title?.trim().toLowerCase() === normalizedTitle),
+  }
+}
+
 export async function fetchNotes({ collegeId, year, subject }) {
   let query = supabase
     .from('notes')
