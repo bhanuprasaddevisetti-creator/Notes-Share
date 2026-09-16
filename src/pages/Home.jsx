@@ -4,7 +4,7 @@ export default function Home({ profile }) {
   return (
     <div className="container" style={{ paddingTop: '2.5rem', paddingBottom: '3rem', maxWidth: '640px' }}>
       <h1 style={{ fontSize: '1.9rem' }}>
-        Welcome{profile?.full_name ? `, ${profile.full_name.split(' ')[0]}` : ''}.
+        Welcome{profile?.full_name ? `, ${profile.full_name}` : ''}.
       </h1>
       <p style={{ fontSize: '1.05rem' }}>
         NOTE-X is where your college's notes actually live — instead of scattered across

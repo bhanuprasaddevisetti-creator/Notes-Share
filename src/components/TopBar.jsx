@@ -40,6 +40,7 @@ export default function TopBar({ profile }) {
         >
           {profile?.full_name?.[0]?.toUpperCase() || '?'}
         </span>
+        <img src="/logo.svg" alt="" width="24" height="24" />
         <span style={{ fontWeight: 500 }}>{profile?.full_name || 'Your profile'}</span>
         {profile?.verified && <span className="tag verified">verified</span>}
       </Link>
