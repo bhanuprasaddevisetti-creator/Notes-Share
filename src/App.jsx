@@ -53,7 +53,7 @@ function AppShell({ session, profile }) {
   // Logged-out layout: simple header, public pages only.
   return (
     <>
-      <PublicHeader />
+      <PublicHeader session={session} />
       <main style={{ flex: 1 }}>
         <Routes>
           <Route path="/" element={<Landing session={session} />} />

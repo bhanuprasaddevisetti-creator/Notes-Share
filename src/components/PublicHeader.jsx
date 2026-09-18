@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 
-export default function PublicHeader() {
+export default function PublicHeader({ session }) {
   return (
     <header
       style={{
@@ -33,8 +33,8 @@ export default function PublicHeader() {
           <img src="/logo.svg" alt="" width="28" height="28" />
           NOTE-X
         </Link>
-        <Link to="/auth">
-          <button className="primary">Sign in</button>
+        <Link to={session ? '/home' : '/auth'}>
+          <button className="primary">{session ? 'Continue to NOTE-X' : 'Sign in'}</button>
         </Link>
       </div>
     </header>
